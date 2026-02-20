@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Card Game Score Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-6">
+
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow">
+
+    <h1 class="text-2xl font-bold mb-4">🃏 Score Tracker</h1>
+
+    <!-- Add Player -->
+    <div class="flex gap-2 mb-4">
+      <input id="playerName" type="text" placeholder="Enter player name"
+        class="border p-2 rounded w-full" />
+      <button onclick="addPlayer()"
+        class="bg-blue-500 text-white px-4 py-2 rounded">
+        Add Player
+      </button>
+    </div>
+
+    <!-- Score Table -->
+    <div class="overflow-x-auto">
+      <table class="w-full border text-center" id="scoreTable">
+        <thead class="bg-gray-200">
+          <tr id="headerRow">
+            <th class="border p-2">Round</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+        <tfoot>
+          <tr id="totalRow" class="bg-gray-100 font-bold">
+            <td class="border p-2">Total</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- Add Round -->
+    <button onclick="addRound()"
+      class="mt-4 bg-green-500 text-white px-4 py-2 rounded">
+      + Add Round
+    </button>
+
+  </div>
+
+  <script>
+    let players = [];
+    let roundCount = 0;
+
+    function addPlayer() {
+      const nameInput = document.getElementById("playerName");
+      const name = nameInput.value.trim();
+      if (!name) return;
+
+      players.push(name);
+
+      // Add header
+      const headerRow = document.getElementById("headerRow");
+      const th = document.createElement("th");
+      th.className = "border p-2";
+      th.innerText = name;
+      headerRow.appendChild(th);
+
+      // Add total cell
+      const totalRow = document.getElementById("totalRow");
+      const td = document.createElement("td");
+      td.className = "border p-2 total";
+      td.innerText = "0";
+      totalRow.appendChild(td);
+
+      nameInput.value = "";
+    }
+
+    function addRound() {
+      roundCount++;
+
+      const tableBody = document.getElementById("tableBody");
+      const row = document.createElement("tr");
+
+      // Round number
+      const roundCell = document.createElement("td");
+      roundCell.className = "border p-2";
+      roundCell.innerText = roundCount;
+      row.appendChild(roundCell);
+
+      // Score inputs
+      players.forEach((_, index) => {
+        const td = document.createElement("td");
+        td.className = "border p-2";
+
+        const input = document.createElement("input");
+        input.type = "number";
+        input.className = "w-full p-1 border rounded";
+        input.oninput = updateTotals;
+
+        td.appendChild(input);
+        row.appendChild(td);
+      });
+
+      tableBody.appendChild(row);
+    }
+
+    function updateTotals() {
+      const totals = Array(players.length).fill(0);
+      const rows = document.querySelectorAll("#tableBody tr");
+
+      rows.forEach(row => {
+        const inputs = row.querySelectorAll("input");
+        inputs.forEach((input, i) => {
+          totals[i] += Number(input.value) || 0;
+        });
+      });
+
+      const totalCells = document.querySelectorAll(".total");
+      totalCells.forEach((cell, i) => {
+        cell.innerText = totals[i];
+      });
+    }
+  </script>
+
+</body>
+</html>
